@@ -6,6 +6,135 @@
     <title>私人歌单生成器</title>
     <link rel="stylesheet" href="css/styles.css" />
     <link rel="stylesheet" href="css/auth.css" />
+    <style>
+      /* 歌单操作按钮 */
+      .playlist-actions {
+        margin-top: 20px;
+        text-align: center;
+      }
+
+      #create-playlist-btn {
+        background-color: transparent;
+        border: 1px dashed var(--primary-color);
+        color: var(--primary-color);
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+      }
+
+      #create-playlist-btn:hover {
+        background-color: rgba(142, 68, 173, 0.1);
+      }
+
+      /* 模态框样式 */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+      }
+
+      .modal-content {
+        background-color: white;
+        margin: 15% auto;
+        padding: 20px;
+        border-radius: 8px;
+        width: 80%;
+        max-width: 500px;
+        position: relative;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .close-button {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 24px;
+        cursor: pointer;
+        color: #aaa;
+      }
+
+      .close-button:hover {
+        color: #333;
+      }
+
+      /* 表单样式 */
+      #create-playlist-form .form-group {
+        margin-bottom: 15px;
+      }
+
+      #create-playlist-form label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+      }
+
+      #create-playlist-form input,
+      #create-playlist-form textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+
+      #create-playlist-form textarea {
+        min-height: 80px;
+        resize: vertical;
+      }
+
+      #create-playlist-form .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 20px;
+      }
+
+      .btn {
+        padding: 8px 15px;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+        margin-left: 10px;
+      }
+
+      .primary-btn {
+        background-color: var(--primary-color);
+        color: white;
+      }
+
+      .secondary-btn {
+        background-color: #f0f0f0;
+        color: #333;
+      }
+
+      /* 歌曲表格样式 */
+      .song-table tbody tr {
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+
+      .song-table tbody tr:hover {
+        background-color: rgba(142, 68, 173, 0.05);
+      }
+
+      .song-table tbody tr.playing {
+        background-color: rgba(142, 68, 173, 0.1);
+        font-weight: 500;
+      }
+
+      .song-table tbody tr.playing td:first-child::before {
+        content: "▶";
+        font-size: 10px;
+        margin-right: 5px;
+        color: var(--primary-color);
+      }
+    </style>
   </head>
   <body>
     <!-- 导航栏 -->
@@ -96,6 +225,9 @@
               <li>工作专注</li>
               <li>睡前放松</li>
             </ul>
+            <div class="playlist-actions">
+              <button id="create-playlist-btn">新建歌单</button>
+            </div>
           </div>
           <div class="song-container">
             <div class="song-header">
@@ -189,6 +321,38 @@
       </div>
     </div>
 
+    <!-- 新建歌单对话框 -->
+    <div id="create-playlist-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>创建新歌单</h2>
+        <form id="create-playlist-form">
+          <div class="form-group">
+            <label for="playlist-name">歌单名称</label>
+            <input
+              type="text"
+              id="playlist-name"
+              required
+              placeholder="请输入歌单名称"
+            />
+          </div>
+          <div class="form-group">
+            <label for="playlist-desc">歌单描述</label>
+            <textarea
+              id="playlist-desc"
+              placeholder="描述这个歌单..."
+            ></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn primary-btn">创建</button>
+            <button type="button" class="btn secondary-btn cancel-btn">
+              取消
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- 页脚 -->
     <footer>
       <div class="container">
@@ -241,13 +405,41 @@
     <script type="module">
       // 由于模块导入在普通HTML中需要类型为module
       import AuthManager from "./js/auth.js";
+      import MusicUploader from "./js/upload.js";
+      import MusicPlayer from "./js/player.js";
 
-      // 在页面加载完成后初始化认证管理器
+      // 在页面加载完成后初始化所有模块
       document.addEventListener("DOMContentLoaded", () => {
         // 初始化认证管理器
         const authManager = new AuthManager();
 
-        // 音乐上传按钮点击事件，需要登录验证
+        // 初始化音乐上传器
+        const musicUploader = new MusicUploader();
+
+        // 音乐播放器配置
+        const playerConfig = {
+          onSongEnd: () => {
+            // 播放下一首
+            if (currentPlaylist.length > 0) {
+              if (currentIndex < currentPlaylist.length - 1) {
+                currentIndex++;
+              } else {
+                currentIndex = 0; // 循环播放
+              }
+              musicPlayer.loadSong(currentPlaylist[currentIndex]);
+              highlightCurrentSong();
+            }
+          },
+        };
+
+        // 初始化音乐播放器
+        const musicPlayer = new MusicPlayer(playerConfig);
+
+        // 存储当前播放列表和索引
+        let currentPlaylist = [];
+        let currentIndex = -1;
+
+        // 音乐上传按钮点击事件
         document
           .getElementById("upload-music-btn")
           .addEventListener("click", (e) => {
@@ -261,8 +453,17 @@
               return;
             }
 
-            // 已登录，执行上传逻辑
-            alert("请选择要上传的音乐文件");
+            // 已登录，调用上传功能
+            musicUploader.showFileSelector((uploadedSongs) => {
+              // 上传成功后，添加到当前歌单
+              console.log("成功上传音乐文件:", uploadedSongs);
+
+              // 更新界面
+              updateSongTable(uploadedSongs);
+
+              // 显示成功消息
+              alert(`成功上传 ${uploadedSongs.length} 首歌曲到当前歌单！`);
+            });
           });
 
         // 添加歌曲按钮也需要登录验证
@@ -277,8 +478,252 @@
               return;
             }
 
-            // 已登录，执行添加歌曲逻辑...
-            alert("请选择要添加的音乐文件");
+            // 已登录，调用上传功能
+            musicUploader.showFileSelector((uploadedSongs) => {
+              // 上传成功后，添加到当前歌单
+              console.log("成功添加音乐文件:", uploadedSongs);
+
+              // 更新界面
+              updateSongTable(uploadedSongs);
+
+              // 显示成功消息
+              alert(`成功添加 ${uploadedSongs.length} 首歌曲到当前歌单！`);
+            });
+          });
+
+        // 创建新歌单按钮事件
+        document
+          .getElementById("create-playlist-btn")
+          .addEventListener("click", () => {
+            // 检查是否已登录
+            if (!authManager.isLoggedIn()) {
+              alert("请先登录后再创建歌单");
+              // 显示登录模态框
+              authManager.showLoginModal();
+              return;
+            }
+
+            // 显示创建歌单对话框
+            const modal = document.getElementById("create-playlist-modal");
+            modal.style.display = "block";
+          });
+
+        // 关闭模态框事件
+        document
+          .querySelectorAll(".close-button, .cancel-btn")
+          .forEach((element) => {
+            element.addEventListener("click", () => {
+              document.getElementById("create-playlist-modal").style.display =
+                "none";
+            });
+          });
+
+        // 创建歌单表单提交
+        document
+          .getElementById("create-playlist-form")
+          .addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            const playlistName = document.getElementById("playlist-name").value;
+            const playlistDesc = document.getElementById("playlist-desc").value;
+
+            if (!playlistName.trim()) {
+              alert("歌单名称不能为空！");
+              return;
+            }
+
+            // 创建新歌单
+            addPlaylistToUI(playlistName);
+            document.getElementById("playlist-name").value = "";
+            document.getElementById("playlist-desc").value = "";
+            document.getElementById("create-playlist-modal").style.display =
+              "none";
+          });
+
+        // 手动添加歌单到UI
+        function addPlaylistToUI(name) {
+          const li = document.createElement("li");
+          li.textContent = name;
+          li.addEventListener("click", function () {
+            document
+              .querySelectorAll(".playlist-list li")
+              .forEach((item) => item.classList.remove("active"));
+            this.classList.add("active");
+            document.querySelector(".song-header h3").textContent = name;
+
+            // 清空歌曲列表（新建的歌单没有歌曲）
+            document.querySelector(".song-table tbody").innerHTML = "";
+
+            // 清空当前播放列表
+            currentPlaylist = [];
+            currentIndex = -1;
+          });
+          document.querySelector(".playlist-list").appendChild(li);
+        }
+
+        // 更新歌曲表格
+        function updateSongTable(songs) {
+          if (!songs || songs.length === 0) return;
+
+          const tbody = document.querySelector(".song-table tbody");
+
+          // 添加新上传的歌曲
+          songs.forEach((song, index) => {
+            const row = document.createElement("tr");
+
+            // 格式化时长（秒转mm:ss）
+            const duration = song.duration || 0;
+            const mins = Math.floor(duration / 60);
+            const secs = Math.floor(duration % 60);
+            const formattedDuration = `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+
+            row.innerHTML = `
+              <td>${tbody.children.length + index + 1}</td>
+              <td>${song.title}</td>
+              <td>${song.artist}</td>
+              <td>${song.album}</td>
+              <td>${formattedDuration}</td>
+              <td>♡</td>
+            `;
+
+            // 添加到当前播放列表
+            currentPlaylist.push(song);
+
+            // 添加点击事件
+            row.addEventListener("click", function () {
+              // 获取当前歌曲在列表中的索引
+              const songIndex = Array.from(tbody.children).indexOf(this);
+              currentIndex = songIndex;
+
+              // 使用MusicPlayer加载并播放歌曲
+              musicPlayer.loadSong(currentPlaylist[currentIndex]);
+              highlightCurrentSong();
+            });
+
+            tbody.appendChild(row);
+          });
+        }
+
+        // 控制按钮事件处理
+        const playButton = document.querySelector(
+          ".player-controls .control-btn:nth-child(2)"
+        );
+        const prevButton = document.querySelector(
+          ".player-controls .control-btn:nth-child(1)"
+        );
+        const nextButton = document.querySelector(
+          ".player-controls .control-btn:nth-child(3)"
+        );
+
+        // 播放/暂停按钮 - 需要在这里绑定事件，因为在MusicPlayer类中已存在重复绑定
+        playButton.addEventListener("click", () => {
+          if (currentIndex >= 0 && currentPlaylist.length > 0) {
+            // 如果当前有歌曲正在播放，则切换播放/暂停状态
+            musicPlayer.togglePlay();
+          } else if (currentPlaylist.length > 0) {
+            // 如果有歌曲但没有播放，播放第一首
+            currentIndex = 0;
+            musicPlayer.loadSong(currentPlaylist[currentIndex]);
+            highlightCurrentSong();
+          }
+        });
+
+        // 上一首按钮
+        prevButton.addEventListener("click", () => {
+          if (currentPlaylist.length > 0) {
+            if (currentIndex > 0) {
+              currentIndex--;
+            } else {
+              // 循环到最后一首
+              currentIndex = currentPlaylist.length - 1;
+            }
+            musicPlayer.loadSong(currentPlaylist[currentIndex]);
+
+            // 高亮显示当前播放的歌曲行
+            highlightCurrentSong();
+          }
+        });
+
+        // 下一首按钮
+        nextButton.addEventListener("click", () => {
+          if (currentPlaylist.length > 0) {
+            if (currentIndex < currentPlaylist.length - 1) {
+              currentIndex++;
+            } else {
+              // 循环到第一首
+              currentIndex = 0;
+            }
+            musicPlayer.loadSong(currentPlaylist[currentIndex]);
+
+            // 高亮显示当前播放的歌曲行
+            highlightCurrentSong();
+          }
+        });
+
+        // 高亮显示当前播放的歌曲行
+        function highlightCurrentSong() {
+          const rows = document.querySelectorAll(".song-table tbody tr");
+          rows.forEach((row, index) => {
+            if (index === currentIndex) {
+              row.classList.add("playing");
+            } else {
+              row.classList.remove("playing");
+            }
+          });
+        }
+
+        // 预加载music文件夹中的音乐
+        function preloadLocalMusic() {
+          if (authManager.isLoggedIn()) {
+            const musicFiles = [
+              {
+                name: "call of silence.mp3",
+                path: "music/call of silence.mp3",
+              },
+              {
+                name: "达尔文-林俊杰-JJ的咖啡调调.mp3",
+                path: "music/达尔文-林俊杰-JJ的咖啡调调.mp3",
+              },
+            ];
+
+            // 加载第一首歌曲
+            fetch(musicFiles[0].path)
+              .then((response) => response.blob())
+              .then((blob) => {
+                const file1 = new File([blob], musicFiles[0].name, {
+                  type: "audio/mpeg",
+                });
+
+                // 加载第二首歌曲
+                return fetch(musicFiles[1].path)
+                  .then((response) => response.blob())
+                  .then((blob) => {
+                    const file2 = new File([blob], musicFiles[1].name, {
+                      type: "audio/mpeg",
+                    });
+                    return [file1, file2];
+                  });
+              })
+              .then((files) => {
+                // 处理文件
+                musicUploader.processFiles(files).then((songs) => {
+                  updateSongTable(songs);
+                  console.log("成功加载本地音乐文件", songs);
+                });
+              })
+              .catch((error) => {
+                console.error("加载本地音乐文件失败:", error);
+              });
+          }
+        }
+
+        // 自动加载本地音乐
+        document
+          .getElementById("add-song-btn")
+          .addEventListener("click", function () {
+            if (authManager.isLoggedIn()) {
+              preloadLocalMusic();
+            }
           });
       });
     </script>

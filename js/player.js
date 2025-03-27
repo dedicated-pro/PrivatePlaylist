@@ -1,25 +1,52 @@
 // 播放器类，封装音频播放功能
 class MusicPlayer {
-  constructor() {
+  constructor(config = {}) {
     // 初始化播放器状态
     this.isPlaying = false;
     this.currentSong = null;
     this.volume = 0.7; // 默认音量
     this.audio = new Audio();
 
+    // 保存配置和回调
+    this.config = config;
+
     // 设置音频事件监听
     this.setupAudioEvents();
 
-    // 初始化播放器UI控制
+    // 初始化播放器UI控制（不要在此绑定播放、上一首、下一首按钮，由外部控制）
     this.initPlayerControls();
   }
 
   // 设置音频事件监听
   setupAudioEvents() {
     this.audio.addEventListener("timeupdate", this.updateProgress.bind(this));
-    this.audio.addEventListener("ended", this.songEnded.bind(this));
+    this.audio.addEventListener("ended", () => {
+      this.songEnded();
+      // 调用onSongEnd回调
+      if (
+        this.config.onSongEnd &&
+        typeof this.config.onSongEnd === "function"
+      ) {
+        this.config.onSongEnd();
+      }
+    });
     this.audio.addEventListener("canplay", () => {
       document.querySelector(".track-info h4").classList.remove("loading");
+    });
+
+    // 监听播放状态变化
+    this.audio.addEventListener("play", () => {
+      this.isPlaying = true;
+      document.querySelector(
+        ".player-controls .control-btn:nth-child(2)"
+      ).textContent = "⏸";
+    });
+
+    this.audio.addEventListener("pause", () => {
+      this.isPlaying = false;
+      document.querySelector(
+        ".player-controls .control-btn:nth-child(2)"
+      ).textContent = "▶";
     });
 
     // 设置音量
@@ -28,35 +55,7 @@ class MusicPlayer {
 
   // 初始化播放器UI控制
   initPlayerControls() {
-    const playButton = document.querySelector(
-      ".player-controls .control-btn:nth-child(2)"
-    );
-    const prevButton = document.querySelector(
-      ".player-controls .control-btn:nth-child(1)"
-    );
-    const nextButton = document.querySelector(
-      ".player-controls .control-btn:nth-child(3)"
-    );
     const progressBar = document.querySelector(".progress-bar");
-
-    // 播放/暂停控制
-    playButton.addEventListener("click", () => {
-      if (this.currentSong) {
-        this.togglePlay();
-      }
-    });
-
-    // 上一首
-    prevButton.addEventListener("click", () => {
-      // 在实际项目中实现播放上一首歌的逻辑
-      console.log("播放上一首歌");
-    });
-
-    // 下一首
-    nextButton.addEventListener("click", () => {
-      // 在实际项目中实现播放下一首歌的逻辑
-      console.log("播放下一首歌");
-    });
 
     // 进度条点击
     progressBar.addEventListener("click", (e) => {
@@ -101,11 +100,29 @@ class MusicPlayer {
   // 播放
   play() {
     if (this.currentSong) {
-      this.audio.play();
-      this.isPlaying = true;
-      document.querySelector(
-        ".player-controls .control-btn:nth-child(2)"
-      ).textContent = "⏸";
+      try {
+        // 为防止浏览器策略阻止自动播放，使用Promise捕获可能的错误
+        const playPromise = this.audio.play();
+
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              this.isPlaying = true;
+              document.querySelector(
+                ".player-controls .control-btn:nth-child(2)"
+              ).textContent = "⏸";
+            })
+            .catch((error) => {
+              console.error("播放失败:", error);
+              this.isPlaying = false;
+              document.querySelector(
+                ".player-controls .control-btn:nth-child(2)"
+              ).textContent = "▶";
+            });
+        }
+      } catch (error) {
+        console.error("播放出错:", error);
+      }
     }
   }
 
@@ -151,8 +168,6 @@ class MusicPlayer {
     document.querySelector(
       ".player-controls .control-btn:nth-child(2)"
     ).textContent = "▶";
-
-    // 在实际项目中可以自动播放下一首
   }
 
   // 格式化时间（秒转换为 mm:ss 格式）

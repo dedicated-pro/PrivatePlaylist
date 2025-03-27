@@ -85,11 +85,11 @@ class AuthManager {
           <h2>用户登录</h2>
           <form id="login-form">
             <div class="form-group">
-              <label for="login-username">用户名</label>
+              <label for="login-username">用户名(demo)</label>
               <input type="text" id="login-username" name="username" required>
             </div>
             <div class="form-group">
-              <label for="login-password">密码</label>
+              <label for="login-password">密码(password123)</label>
               <input type="password" id="login-password" name="password" required>
             </div>
             <div class="form-actions">
