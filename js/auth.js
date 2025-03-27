@@ -4,6 +4,9 @@ class AuthManager {
     this.currentUser = null;
     this.users = [];
 
+    // 登录状态变化的回调函数
+    this.onLoginStateChanged = null;
+
     // 绑定UI元素
     this.loginBtn = document.querySelector(".login-btn");
 
@@ -85,11 +88,11 @@ class AuthManager {
           <h2>用户登录</h2>
           <form id="login-form">
             <div class="form-group">
-              <label for="login-username">用户名(demo)</label>
+              <label for="login-username">用户名</label>
               <input type="text" id="login-username" name="username" required>
             </div>
             <div class="form-group">
-              <label for="login-password">密码(password123)</label>
+              <label for="login-password">密码</label>
               <input type="password" id="login-password" name="password" required>
             </div>
             <div class="form-actions">
@@ -270,6 +273,14 @@ class AuthManager {
 
     // 关闭模态框
     this.closeAuthModal();
+
+    // 触发登录状态变化回调
+    if (
+      this.onLoginStateChanged &&
+      typeof this.onLoginStateChanged === "function"
+    ) {
+      this.onLoginStateChanged(true);
+    }
   }
 
   // 退出登录
@@ -287,6 +298,14 @@ class AuthManager {
     const userMenu = document.getElementById("user-menu");
     if (userMenu) {
       document.body.removeChild(userMenu);
+    }
+
+    // 触发登录状态变化回调
+    if (
+      this.onLoginStateChanged &&
+      typeof this.onLoginStateChanged === "function"
+    ) {
+      this.onLoginStateChanged(false);
     }
   }
 
@@ -366,6 +385,14 @@ class AuthManager {
         if (user) {
           this.currentUser = user;
           this.updateLoginUI();
+
+          // 触发登录状态变化回调
+          if (
+            this.onLoginStateChanged &&
+            typeof this.onLoginStateChanged === "function"
+          ) {
+            this.onLoginStateChanged(true);
+          }
         }
       } catch (e) {
         console.error("解析用户信息失败", e);

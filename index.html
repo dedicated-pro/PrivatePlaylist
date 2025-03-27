@@ -28,6 +28,115 @@
         background-color: rgba(142, 68, 173, 0.1);
       }
 
+      /* 歌单列表容器样式 */
+      .playlist-sidebar {
+        width: 250px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 300px);
+        min-height: 400px;
+        max-height: 800px;
+      }
+
+      .sidebar-title {
+        margin: 0 0 15px 0;
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--primary-color);
+        color: #333;
+        font-size: 1.2em;
+      }
+
+      .playlist-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        overflow-y: auto;
+        flex-grow: 1;
+      }
+
+      /* 自定义滚动条样式 */
+      .playlist-list::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .playlist-list::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+      }
+
+      .playlist-list::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 3px;
+      }
+
+      .playlist-list::-webkit-scrollbar-thumb:hover {
+        background: #aaa;
+      }
+
+      .playlist-list li {
+        padding: 10px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-radius: 4px;
+        margin-bottom: 2px;
+      }
+
+      .playlist-list li:hover {
+        background-color: rgba(142, 68, 173, 0.05);
+      }
+
+      .playlist-list li.active {
+        background-color: rgba(142, 68, 173, 0.1);
+        color: var(--primary-color);
+        font-weight: 500;
+      }
+
+      /* 平台歌单样式 */
+      .platform-title {
+        font-weight: bold;
+        color: #333;
+        padding: 10px 0 5px 0;
+        margin-top: 10px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        cursor: default;
+      }
+
+      .platform-title:first-child {
+        margin-top: 0;
+      }
+
+      .platform-playlist {
+        padding-left: 15px !important;
+        font-size: 0.95em;
+        position: relative;
+      }
+
+      .platform-playlist::before {
+        content: "•";
+        position: absolute;
+        left: 5px;
+        color: #888;
+      }
+
+      /* 歌单容器布局 */
+      .playlist-container {
+        display: flex;
+        gap: 20px;
+        margin-top: 20px;
+      }
+
+      .song-container {
+        flex-grow: 1;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+      }
+
       /* 模态框样式 */
       .modal {
         display: none;
@@ -439,6 +548,438 @@
         let currentPlaylist = [];
         let currentIndex = -1;
 
+        // 热门平台歌单数据
+        const platformPlaylists = [
+          {
+            platform: "网易云音乐",
+            icon: "🎵",
+            playlists: [
+              {
+                name: "云音乐热歌榜",
+                songs: [
+                  {
+                    title: "起风了",
+                    artist: "买辣椒也用券",
+                    album: "起风了",
+                    duration: 325,
+                  },
+                  {
+                    title: "离人",
+                    artist: "音阙诗听/王梓钰",
+                    album: "离人",
+                    duration: 215,
+                  },
+                  {
+                    title: "这一生关于你的风景",
+                    artist: "隔壁老樊",
+                    album: "这一生关于你的风景",
+                    duration: 285,
+                  },
+                ],
+              },
+              {
+                name: "云音乐飙升榜",
+                songs: [
+                  {
+                    title: "雨爱",
+                    artist: "刘大壮",
+                    album: "雨爱",
+                    duration: 256,
+                  },
+                  {
+                    title: "多远都要在一起",
+                    artist: "G.E.M.邓紫棋",
+                    album: "多远都要在一起",
+                    duration: 237,
+                  },
+                  {
+                    title: "句号",
+                    artist: "G.E.M.邓紫棋",
+                    album: "句号",
+                    duration: 203,
+                  },
+                ],
+              },
+              {
+                name: "说唱TOP榜",
+                songs: [
+                  {
+                    title: "My New Swag",
+                    artist: "VaVa毛衍七",
+                    album: "分贝",
+                    duration: 185,
+                  },
+                  {
+                    title: "Mojito",
+                    artist: "周杰伦",
+                    album: "Mojito",
+                    duration: 196,
+                  },
+                  {
+                    title: "姐姐",
+                    artist: "李雪琴",
+                    album: "姐姐",
+                    duration: 177,
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            platform: "QQ音乐",
+            icon: "🎧",
+            playlists: [
+              {
+                name: "流行指数榜",
+                songs: [
+                  {
+                    title: "光点",
+                    artist: "胡彦斌",
+                    album: "光点",
+                    duration: 267,
+                  },
+                  {
+                    title: "我很好（吉他版）",
+                    artist: "刘大壮",
+                    album: "我很好",
+                    duration: 218,
+                  },
+                  {
+                    title: "耗尽",
+                    artist: "薛之谦",
+                    album: "耗尽",
+                    duration: 261,
+                  },
+                ],
+              },
+              {
+                name: "热歌榜",
+                songs: [
+                  {
+                    title: "你的答案",
+                    artist: "阿冗",
+                    album: "你的答案",
+                    duration: 219,
+                  },
+                  {
+                    title: "赤伶",
+                    artist: "HITA",
+                    album: "赤伶",
+                    duration: 203,
+                  },
+                  {
+                    title: "像鱼",
+                    artist: "王贰浪",
+                    album: "像鱼",
+                    duration: 216,
+                  },
+                ],
+              },
+              {
+                name: "新歌榜",
+                songs: [
+                  {
+                    title: "下山",
+                    artist: "要不要买菜",
+                    album: "下山",
+                    duration: 192,
+                  },
+                  {
+                    title: "世界这么大还是遇见你",
+                    artist: "程响",
+                    album: "世界这么大还是遇见你",
+                    duration: 226,
+                  },
+                  {
+                    title: "绿色",
+                    artist: "陈雪凝",
+                    album: "绿色",
+                    duration: 269,
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            platform: "酷狗音乐",
+            icon: "🎼",
+            playlists: [
+              {
+                name: "酷狗TOP500",
+                songs: [
+                  {
+                    title: "野子",
+                    artist: "苏运莹",
+                    album: "野子",
+                    duration: 242,
+                  },
+                  {
+                    title: "年少有为",
+                    artist: "李荣浩",
+                    album: "耳朵",
+                    duration: 253,
+                  },
+                  {
+                    title: "起风了",
+                    artist: "吴青峰",
+                    album: "起风了",
+                    duration: 314,
+                  },
+                ],
+              },
+              {
+                name: "内地榜",
+                songs: [
+                  {
+                    title: "空空如也",
+                    artist: "胡66",
+                    album: "空空如也",
+                    duration: 177,
+                  },
+                  {
+                    title: "假装",
+                    artist: "陈雪凝",
+                    album: "假装",
+                    duration: 213,
+                  },
+                  {
+                    title: "可能否",
+                    artist: "木小雅",
+                    album: "可能否",
+                    duration: 196,
+                  },
+                ],
+              },
+              {
+                name: "ACG榜",
+                songs: [
+                  {
+                    title: "勾指起誓",
+                    artist: "泠鸢yousa",
+                    album: "勾指起誓",
+                    duration: 208,
+                  },
+                  {
+                    title: "大魔王",
+                    artist: "泠鸢yousa",
+                    album: "大魔王",
+                    duration: 173,
+                  },
+                  {
+                    title: "春日影",
+                    artist: "双笙",
+                    album: "春日影",
+                    duration: 245,
+                  },
+                ],
+              },
+            ],
+          },
+        ];
+
+        // 用户私人歌单数据
+        const userPlaylists = [
+          {
+            name: "最爱收藏",
+            songs: [
+              {
+                title: "春风十里",
+                artist: "鹿先森乐队",
+                album: "所有的酒，都不如你",
+                duration: 328,
+              },
+              {
+                title: "莫斯科没有眼泪",
+                artist: "李健",
+                album: "似水流年",
+                duration: 276,
+              },
+              {
+                title: "消愁",
+                artist: "毛不易",
+                album: "平凡的一天",
+                duration: 249,
+              },
+              {
+                title: "芒种",
+                artist: "音阙诗听/赵方婧",
+                album: "芒种",
+                duration: 216,
+              },
+              {
+                title: "起风了",
+                artist: "买辣椒也用券",
+                album: "起风了",
+                duration: 311,
+              },
+            ],
+          },
+          { name: "流行热歌", songs: [] },
+          { name: "轻音乐", songs: [] },
+          { name: "运动动力", songs: [] },
+          { name: "工作专注", songs: [] },
+          { name: "睡前放松", songs: [] },
+        ];
+
+        // 初始化歌单显示
+        updatePlaylistDisplay();
+
+        // 监听登录状态变化
+        authManager.onLoginStateChanged = (isLoggedIn) => {
+          updatePlaylistDisplay();
+
+          // 如果登出，清空播放列表
+          if (!isLoggedIn) {
+            currentPlaylist = [];
+            currentIndex = -1;
+            // 清空歌曲表格
+            document.querySelector(".song-table tbody").innerHTML = "";
+          }
+        };
+
+        // 更新歌单显示
+        function updatePlaylistDisplay() {
+          const isLoggedIn = authManager.isLoggedIn();
+          const playlistContainer = document.querySelector(".playlist-sidebar");
+          const sidebarTitle =
+            playlistContainer.querySelector(".sidebar-title");
+          const playlistList =
+            playlistContainer.querySelector(".playlist-list");
+          const playlistActions =
+            playlistContainer.querySelector(".playlist-actions");
+
+          // 清空歌单列表
+          playlistList.innerHTML = "";
+
+          if (isLoggedIn) {
+            // 显示用户私人歌单
+            sidebarTitle.textContent = "我的歌单";
+            playlistActions.style.display = "block";
+
+            // 添加用户歌单
+            userPlaylists.forEach((playlist, index) => {
+              const li = document.createElement("li");
+              li.textContent = playlist.name;
+              if (index === 0) li.classList.add("active");
+
+              li.addEventListener("click", function () {
+                selectPlaylist(this, playlist);
+              });
+
+              playlistList.appendChild(li);
+            });
+
+            // 初始加载第一个歌单
+            loadPlaylistSongs(userPlaylists[0]);
+          } else {
+            // 显示热门平台歌单
+            sidebarTitle.textContent = "热门推荐歌单";
+            playlistActions.style.display = "none";
+
+            // 添加平台分类
+            platformPlaylists.forEach((platform) => {
+              // 添加平台标题
+              const platformTitle = document.createElement("li");
+              platformTitle.className = "platform-title";
+              platformTitle.innerHTML = `${platform.icon} ${platform.platform}`;
+              playlistList.appendChild(platformTitle);
+
+              // 添加该平台下的歌单
+              platform.playlists.forEach((playlist, index) => {
+                const li = document.createElement("li");
+                li.textContent = playlist.name;
+                li.classList.add("platform-playlist");
+                if (platform === platformPlaylists[0] && index === 0) {
+                  li.classList.add("active");
+                }
+
+                li.addEventListener("click", function () {
+                  selectPlaylist(this, playlist);
+                });
+
+                playlistList.appendChild(li);
+              });
+            });
+
+            // 初始加载第一个平台的第一个歌单
+            loadPlaylistSongs(platformPlaylists[0].playlists[0]);
+          }
+        }
+
+        // 选择歌单
+        function selectPlaylist(element, playlist) {
+          // 更新UI选中状态
+          document.querySelectorAll(".playlist-list li").forEach((item) => {
+            item.classList.remove("active");
+          });
+          element.classList.add("active");
+
+          // 更新标题
+          document.querySelector(".song-header h3").textContent = playlist.name;
+
+          // 加载歌单歌曲
+          loadPlaylistSongs(playlist);
+        }
+
+        // 加载歌单歌曲
+        function loadPlaylistSongs(playlist) {
+          const tbody = document.querySelector(".song-table tbody");
+          tbody.innerHTML = "";
+
+          // 清空当前播放列表
+          currentPlaylist = [];
+          currentIndex = -1;
+
+          if (!playlist.songs || playlist.songs.length === 0) {
+            // 歌单为空
+            return;
+          }
+
+          // 添加歌曲到表格
+          playlist.songs.forEach((song, index) => {
+            const row = document.createElement("tr");
+
+            // 格式化时长
+            const mins = Math.floor(song.duration / 60);
+            const secs = Math.floor(song.duration % 60);
+            const formattedDuration = `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+
+            row.innerHTML = `
+              <td>${index + 1}</td>
+              <td>${song.title}</td>
+              <td>${song.artist}</td>
+              <td>${song.album}</td>
+              <td>${formattedDuration}</td>
+              <td>♡</td>
+            `;
+
+            // 为每首歌创建模拟的播放URL（实际项目中应该有真实URL）
+            const simulatedSong = {
+              ...song,
+              url: `#${song.title.replace(/\s/g, "_")}`, // 模拟URL
+              id: Date.now() + index,
+            };
+
+            // 添加到当前播放列表
+            currentPlaylist.push(simulatedSong);
+
+            // 添加点击事件
+            row.addEventListener("click", function () {
+              // 获取当前歌曲在列表中的索引
+              const songIndex = Array.from(tbody.children).indexOf(this);
+              currentIndex = songIndex;
+
+              // 使用MusicPlayer加载并播放歌曲
+              // 由于我们没有真实的音频文件，这里会尝试播放但实际不会有声音
+              // 在实际项目中，应该提供真实的音频URL
+              musicPlayer.loadSong(currentPlaylist[currentIndex]);
+              highlightCurrentSong();
+            });
+
+            tbody.appendChild(row);
+          });
+        }
+
         // 音乐上传按钮点击事件
         document
           .getElementById("upload-music-btn")
@@ -538,6 +1079,13 @@
             document.getElementById("playlist-desc").value = "";
             document.getElementById("create-playlist-modal").style.display =
               "none";
+
+            // 添加到用户歌单数据
+            userPlaylists.push({
+              name: playlistName,
+              description: playlistDesc,
+              songs: [],
+            });
           });
 
         // 手动添加歌单到UI
@@ -601,6 +1149,17 @@
             });
 
             tbody.appendChild(row);
+
+            // 添加到当前选中的用户歌单数据中
+            const activePlaylistName = document.querySelector(
+              ".playlist-list li.active"
+            ).textContent;
+            const userPlaylist = userPlaylists.find(
+              (playlist) => playlist.name === activePlaylistName
+            );
+            if (userPlaylist) {
+              userPlaylist.songs.push(song);
+            }
           });
         }
 
