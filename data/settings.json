@@ -1,0 +1,52 @@
+{
+  "system": {
+    "version": "1.0.0",
+    "lastUpdate": "2024-03-15T00:00:00.000Z",
+    "supportedFormats": ["mp3", "flac", "wav", "aac", "ogg"],
+    "maxUploadSize": 50000000,
+    "defaultSettings": {
+      "theme": "light",
+      "language": "zh-CN",
+      "quality": {
+        "bitrate": 320,
+        "format": "mp3"
+      },
+      "player": {
+        "autoPlay": false,
+        "crossfade": true,
+        "crossfadeDuration": 3,
+        "volume": 0.8,
+        "equalizer": {
+          "enabled": false,
+          "presets": ["pop", "rock", "jazz", "classical"]
+        }
+      }
+    }
+  },
+  "platforms": {
+    "netease": {
+      "name": "网易云音乐",
+      "icon": "🎵",
+      "enabled": true,
+      "updateInterval": 3600,
+      "apiEndpoint": "https://api.example.com/netease",
+      "supportedFeatures": ["search", "playlist", "lyrics"]
+    },
+    "qq": {
+      "name": "QQ音乐",
+      "icon": "🎧",
+      "enabled": true,
+      "updateInterval": 3600,
+      "apiEndpoint": "https://api.example.com/qq",
+      "supportedFeatures": ["search", "playlist", "lyrics"]
+    },
+    "kugou": {
+      "name": "酷狗音乐",
+      "icon": "🎼",
+      "enabled": true,
+      "updateInterval": 3600,
+      "apiEndpoint": "https://api.example.com/kugou",
+      "supportedFeatures": ["search", "playlist", "lyrics"]
+    }
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "songs": {
+    "local": [
+      {
+        "id": "s1001",
+        "title": "春风十里",
+        "artist": "鹿先森乐队",
+        "album": "所有的酒，都不如你",
+        "duration": 328,
+        "url": "music/春风十里.mp3",
+        "coverUrl": "covers/春风十里.jpg",
+        "lyrics": "lyrics/春风十里.lrc",
+        "format": "mp3",
+        "size": 7864320,
+        "bitrate": 320,
+        "addedAt": "2024-01-01T00:00:00.000Z",
+        "metadata": {
+          "genre": "流行",
+          "year": "2017",
+          "language": "zh-CN",
+          "bpm": 88
+        },
+        "stats": {
+          "playCount": 50,
+          "lastPlayedAt": "2024-03-15T10:30:00.000Z",
+          "rating": 5
+        },
+        "tags": ["华语", "流行", "民谣"]
+      }
+    ],
+    "platform": {
+      "netease": [
+        {
+          "id": "n1001",
+          "title": "起风了",
+          "artist": "买辣椒也用券",
+          "album": "起风了",
+          "duration": 325,
+          "platform": "netease",
+          "platformId": "1330348068",
+          "coverUrl": "http://p2.music.126.net/diGAyEmpymX8G7JcnElncQ==/109951163699673355.jpg",
+          "metadata": {
+            "genre": "流行",
+            "year": "2019",
+            "language": "zh-CN"
+          },
+          "stats": {
+            "playCount": 100000000,
+            "likeCount": 1000000
+          }
+        }
+      ],
+      "qq": [
+        {
+          "id": "q1001",
+          "title": "光点",
+          "artist": "胡彦斌",
+          "album": "光点",
+          "duration": 267,
+          "platform": "qq",
+          "platformId": "375773",
+          "coverUrl": "https://y.qq.com/music/photo_new/T002R300x300M000001YLqxd07gMZl.jpg",
+          "metadata": {
+            "genre": "流行",
+            "year": "2024",
+            "language": "zh-CN"
+          },
+          "stats": {
+            "playCount": 500000,
+            "likeCount": 50000
+          }
+        }
+      ]
+    }
+  }
+}

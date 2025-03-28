@@ -1,0 +1,84 @@
+{
+  "playlists": {
+    "user": [
+      {
+        "id": "p1001",
+        "userId": "u1001",
+        "name": "最爱收藏",
+        "description": "我最喜欢的音乐集合",
+        "coverUrl": "covers/favorite.jpg",
+        "createdAt": "2024-01-01T00:00:00.000Z",
+        "updatedAt": "2024-03-15T10:30:00.000Z",
+        "isPrivate": true,
+        "tags": ["华语", "流行", "经典"],
+        "songIds": ["s1001", "s1002", "s1003", "s1004", "s1005"],
+        "stats": {
+          "playCount": 150,
+          "likeCount": 0,
+          "shareCount": 0,
+          "lastPlayedAt": "2024-03-15T10:30:00.000Z"
+        }
+      },
+      {
+        "id": "p1002",
+        "userId": "u1001",
+        "name": "流行热歌",
+        "description": "最新流行音乐",
+        "coverUrl": "covers/pop.jpg",
+        "createdAt": "2024-01-02T00:00:00.000Z",
+        "updatedAt": "2024-03-15T10:30:00.000Z",
+        "isPrivate": true,
+        "tags": ["流行", "热门"],
+        "songIds": [],
+        "stats": {
+          "playCount": 0,
+          "likeCount": 0,
+          "shareCount": 0,
+          "lastPlayedAt": null
+        }
+      }
+    ],
+    "platform": {
+      "netease": {
+        "id": "netease",
+        "name": "网易云音乐",
+        "icon": "🎵",
+        "playlists": [
+          {
+            "id": "n1001",
+            "name": "云音乐热歌榜",
+            "description": "网易云音乐热门歌曲排行榜",
+            "coverUrl": "covers/netease-hot.jpg",
+            "updateFrequency": "daily",
+            "songIds": ["n1001", "n1002", "n1003"],
+            "stats": {
+              "playCount": 1000000,
+              "likeCount": 50000,
+              "shareCount": 10000
+            }
+          }
+        ]
+      },
+      "qq": {
+        "id": "qq",
+        "name": "QQ音乐",
+        "icon": "🎧",
+        "playlists": [
+          {
+            "id": "q1001",
+            "name": "流行指数榜",
+            "description": "QQ音乐流行音乐排行榜",
+            "coverUrl": "covers/qq-pop.jpg",
+            "updateFrequency": "daily",
+            "songIds": ["q1001", "q1002", "q1003"],
+            "stats": {
+              "playCount": 800000,
+              "likeCount": 40000,
+              "shareCount": 8000
+            }
+          }
+        ]
+      }
+    }
+  }
+}
